@@ -94,6 +94,15 @@ var Engine = (function(global) {
             enemy.update(dt);
         });
         player.update();
+        
+        if (player.win()) {
+            allStars.forEach(function(star) {
+                star.celebrate(dt);
+                });
+            allEnemies.forEach(function(enemy) {
+                enemy.pause();
+            });
+        }
     }
 
     /* This function initially draws the "game level", it will then call
@@ -154,6 +163,10 @@ var Engine = (function(global) {
         });
 
         player.render();
+        allStars.forEach(
+            function(star) {
+                star.render();
+        });
     }
 
     /* This function does nothing but it could have been a good place to
@@ -175,7 +188,8 @@ var Engine = (function(global) {
         'images/grass-block.png',
         'images/enemy-bug.png',
         'images/char-boy.png',
-        'images/char-cat-girl.png'
+        'images/char-cat-girl.png',
+        'images/star.png'
     ]);
     Resources.onReady(init);
 

@@ -1,23 +1,11 @@
-// Enemies our player must avoid
-//let Enemy = function() {
-    // Variables applied to each of our instances go here,
-    // we've provided one for you to get started
 
-    // The image/sprite for our enemies, this uses
-    // a helper we've provided to easily load images
-//    this.sprite = 'images/enemy-bug.png';
-//};
+/* range of x: 0-80*5 with 5 columns */
+/* range of y-canvas: 0-400 */
+/* range of y-stones: 73-73*3 with 3 rows*/
 
 
-//Enemy.prototype.update = function(dt) {
-    
-//};
+/* Ememy class */
 
-//Enemy.prototype.render = function() {
-//    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-//};
-
-//Ememy class
 class Enemy {
     constructor(x = -100, y = Math.floor(Math.random()*3+1)*73, speed = Math.floor((Math.random() * 4)+1)*100) {
         this.sprite = 'images/enemy-bug.png';
@@ -25,12 +13,8 @@ class Enemy {
         this.speed = speed;
         this.y = y;
     }
-// Update the enemy's position, required method for game
-// Parameter: dt, a time delta between ticks
-// You should multiply any movement by the dt parameter
-// which will ensure the game runs at the same speed for
-// all computers.
 
+    /* This updates the enemy's position */
     update(dt) {
         this.dt = dt;
         if (this.x < 500 ) {
@@ -42,6 +26,7 @@ class Enemy {
         }
     }
 
+    /* When the game finishes*/
     pause() {
         this.speed = 0;
     }
@@ -53,64 +38,85 @@ class Enemy {
 }
 
 
-const enemy0 = new Enemy();
-const enemy1 = new Enemy();
-const enemy2 = new Enemy();
-const enemy3 = new Enemy();
-const enemy4 = new Enemy();
-const enemy5 = new Enemy();
+const enemy0 = new Enemy(), 
+    enemy1 = new Enemy(),
+    enemy2 = new Enemy(),
+    enemy3 = new Enemy();
 
+
+/* allEnemies array */
 const allEnemies = [];
-// Place all enemy objects in an array called allEnemies
+
 allEnemies.push(enemy0);
 allEnemies.push(enemy1);
 allEnemies.push(enemy2);
 allEnemies.push(enemy3);
-allEnemies.push(enemy4);
-allEnemies.push(enemy5);
 
-// Player class
+/* Player class */
+
 class Player {
-    constructor(x=200, y=400) {
+    constructor(x=200, y=400, starCollected=0) {
     this.sprite = 'images/char-cat-girl.png';
     this.x = x;
     this.y = y;
+    this.starCollected = starCollected;
     }
 
     update(dx=0, dy=0) { 
-        let conflict = this.checkColitions();
-        if (!conflict) {
-            this.x += dx;
-            this.y += dy;
-        } else {
-            setTimeout(this.reset(), 10000);
-        } 
+        this.x += dx;
+        this.y += dy;
+        let conflict = this.checkCollisions();
+        setTimeout(function() {
+            if (conflict) {
+                player.reset();
+            }
+        }, 100); 
     }
     
-    checkColitions () {
+    checkCollisions () {
         for (const enemy of allEnemies) {
             const enemyX = enemy.x, 
-                enemyY = Math.floor(enemy.y / 72),
+                enemyY = Math.floor(enemy.y / 73),
                 playerX = this.x,
                 playerY = Math.floor(this.y / 80);
                     
-            if (Math.abs(playerX - enemyX) <= 80 && playerY === enemyY) {
+            if (playerX - enemyX <= 80 && playerX - enemyX >= - 60 && playerY === enemyY) {
                 return true;
             }
         }
     }
+        
+
+    collectStar() {    
+        
+            for (let star of allStars) {
+                const starX = star.x,
+                    starY = star.y;
+                if (Math.abs(this.x - star.x) <= 70 && Math.abs(this.y - star.y) <= 70 && this.starCollected < 3 && star.y !== -25) {
+                    star.update(this.starCollected);
+                    this.starCollected++;            
+                } 
+            }
+                  
+    }
+
+    win() {
+        if (this.starCollected ===3 && this.y === 0) {
+            return true;
+            }
+    }
     
+
     reset () {
-        this.x = 200;
-        this.y = 400;
+        location.reload();
+
     }
     
     render() {
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     }
     
-    handleInput(evt) {       
-        
+    handleInput(evt) {        
             switch (evt.keyCode) {
                 case 37: //left key pressed
                     if (this.x !== 0) {
@@ -148,20 +154,52 @@ class Player {
 const player = new Player();
 
 
+/* Star class*/
+class Star {
+    constructor(x=Math.floor(Math.random()*400), y=Math.floor(Math.random()*3+1)*73) {
+    this.sprite = 'images/star.png';
+    this.x = x;
+    this.y = y;
+    }
+
+    update(i) {
+        this.y = -200;
+        this.x = i*200 + 20;
+
+    }
+
+    celebrate(dt, speed = 300) {        
+        if (this.y <= 480) {
+            this.dt = dt;
+            this.y += speed*dt;
+        }
+    }
+
+    render() {
+        let starIcon = Resources.get(this.sprite);
+        ctx.drawImage(starIcon, this.x, this.y, starIcon.width*0.7, starIcon.height*0.7);
+    }
+
+}
+
+const star0 = new Star(),
+    star1 = new Star(),
+    star2 = new Star(),
+    allStars = [];
+
+allStars.push(star0);
+allStars.push(star1);
+allStars.push(star2);
 
 
-// This listens for key presses and sends the keys to your
-// Player.handleInput() method. You don't need to modify this.
-// document.addEventListener('keyup', function(e) {
-    // var allowedKeys = {
-    //     37: 'left',
-    //     38: 'up',
-    //     39: 'right',
-    //     40: 'down'
-    // };
-    // player.handleInput(allowedKeys[e.keyCode]);
-// });
+
+/* This listens for key presses and sends the keys to the Player.handleInput() method.*/
 
 document.addEventListener('keydown', function(e) {
-    player.handleInput(e);
+    setTimeout(function() {player.handleInput(e);}, 10);
+    setTimeout(function() {player.collectStar();}, 500);
+    setTimeout(function() {player.win();}, 1500);
+
+
 });
+
