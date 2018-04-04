@@ -90,8 +90,6 @@ class Player {
     collectStar() {    
         
             for (let star of allStars) {
-                const starX = star.x,
-                    starY = star.y;
                 if (Math.abs(this.x - star.x) <= 70 && Math.abs(this.y - star.y) <= 70 && this.starCollected < 3 && star.y !== -25) {
                     star.update(this.starCollected);
                     this.starCollected++;            
