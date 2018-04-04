@@ -14,7 +14,7 @@ class Enemy {
         this.y = y;
     }
 
-    /* This updates the enemy's position */
+    /* This updates the enemy's position, each enemy has a randomly set speed */
     update(dt) {
         this.dt = dt;
         if (this.x < 500 ) {
@@ -26,7 +26,7 @@ class Enemy {
         }
     }
 
-    /* When the game finishes*/
+    /* Stop all enemys' movements, when the game finishes*/
     pause() {
         this.speed = 0;
     }
@@ -62,6 +62,10 @@ class Player {
     this.starCollected = starCollected;
     }
 
+    /* Update the player's position based on keyboard input
+     * and check if player's position contradicts enemies' positions.
+     * If conflict is detected, the player reset to its initial position.  
+    */
     update(dx=0, dy=0) { 
         this.x += dx;
         this.y += dy;
@@ -86,7 +90,7 @@ class Player {
         }
     }
         
-
+    /* When the player moves to a star's position, it collects the star*/
     collectStar() {    
         
             for (let star of allStars) {
@@ -98,6 +102,7 @@ class Player {
                   
     }
 
+    /*When all stars are successfully collected and the player reaches the rive */
     win() {
         if (this.starCollected ===3 && this.y === 0) {
             return true;
@@ -114,6 +119,7 @@ class Player {
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     }
     
+    /* Use keys to control the move of the player*/
     handleInput(evt) {        
             switch (evt.keyCode) {
                 case 37: //left key pressed
@@ -166,6 +172,7 @@ class Star {
 
     }
 
+    /* When the player wins(stars collected, river reached), the stars drop to the ground from the top of the screen */
     celebrate(dt, speed = 300) {        
         if (this.y <= 480) {
             this.dt = dt;
