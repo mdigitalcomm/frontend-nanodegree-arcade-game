@@ -1,9 +1,3 @@
-
-/* range of x: 0-80*5 with 5 columns */
-/* range of y-canvas: 0-400 */
-/* range of y-stones: 73-73*3 with 3 rows*/
-
-
 /* Ememy class */
 
 class Enemy {
@@ -72,11 +66,14 @@ class Player {
         let conflict = this.checkCollisions();
         setTimeout(function() {
             if (conflict) {
-                player.reset();
+                this.reset();
             }
         }, 100); 
     }
     
+    /* Check if player's position contradicts enemies' positions.
+     * if conflict is detected, return true.
+    */
     checkCollisions () {
         for (const enemy of allEnemies) {
             const enemyX = enemy.x, 
