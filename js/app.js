@@ -64,18 +64,19 @@ class Player {
         this.x += dx;
         this.y += dy;
         let conflict = this.checkCollisions();
-        setTimeout(function() {
-            if (conflict) {
-                this.reset();
-            }
-        }, 100); 
+        
+        if (conflict) {
+            this.reset();
+        }
+        
     }
     
     /* Check if player's position contradicts enemies' positions.
      * if conflict is detected, return true.
     */
-    checkCollisions () {
-        for (const enemy of allEnemies) {
+    checkCollisions (enemies=allEnemies) {
+        this.enemies = enemies;
+        for (let enemy of this.enemies) {
             const enemyX = enemy.x, 
                 enemyY = Math.floor(enemy.y / 73),
                 playerX = this.x,
@@ -88,14 +89,14 @@ class Player {
     }
         
     /* When the player moves to a star's position, it collects the star*/
-    collectStar() {    
-        
-            for (let star of allStars) {
-                if (Math.abs(this.x - star.x) <= 70 && Math.abs(this.y - star.y) <= 70 && this.starCollected < 3 && star.y !== -25) {
-                    star.update(this.starCollected);
-                    this.starCollected++;            
-                } 
-            }
+    collectStar(stars=allStars) {    
+        this.stars = stars;
+        for (let star of this.stars) {
+            if (Math.abs(this.x - star.x) <= 70 && Math.abs(this.y - star.y) <= 70 && this.starCollected < 3 && star.y !== -25) {
+                star.update(this.starCollected);
+                this.starCollected++;            
+            } 
+        }
                   
     }
 
@@ -192,7 +193,6 @@ const star0 = new Star(),
 allStars.push(star0);
 allStars.push(star1);
 allStars.push(star2);
-
 
 
 /* This listens for key presses and sends the keys to the Player.handleInput() method.*/
